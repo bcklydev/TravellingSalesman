@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Travelling Salesman</title>
+        <style>
+            body {
+                display: block;
+                margin: 0;
+                padding: 0;
+                font-family: 'Arial', sans-serif;
+                font-size: 1vw;
+            }
+            canvas {
+                position: absolute;
+                top: 10vh;
+                width: 100vw;
+                height: 90vh;
+            }
+            #controls {
+                position: absolute;
+                width: 100vw;
+                height: 9.9vh;
+                background-color: #2F2F2F;
+            }
+            button {
+                margin: 0.5vw;
+                padding: 0.5vw;
+                font-size: 16px;
+            }
+            #record {
+                color: #FFFFFF;
+                margin: 0.5vw;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="btn-group" id="controls">
+            <button id="addNode" onclick="addNode()">Add Node</button>
+            <button id="clearNodes" onclick="clearNodes()" disabled>Clear Nodes</button>
+            <button id="shuffleSolve" onclick="shuffleSolve()" disabled>O(&#8734)</button>
+            <button id="factorialSolve" onclick="factorialSolve()" disabled>O(n!)</button>
+            <button id="heuristicSolve" onclick="heuristicSolve()" disabled>Heuristic</button>
+            <p id="record"></p>
+        </div>
+        <canvas id="game"></canvas>
+        <script src="CommonAlgorithms.js"></script>
+        <script src="TravellingSalesman.js"></script>
+    </body>
+</html>
