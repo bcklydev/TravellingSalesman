@@ -36,25 +36,44 @@ function shuffleArray(array) {
     return array;
 }
 
-function permute(permutation) {
-    var length = permutation.length,
-        result = [permutation.slice()],
-        c = new Array(length).fill(0),
-        i = 1, k, p;
-  
-    while (i < length) {
-      if (c[i] < i) {
-        k = i % 2 && c[i];
-        p = permutation[i];
-        permutation[i] = permutation[k];
-        permutation[k] = p;
-        ++c[i];
-        i = 1;
-        result.push(permutation.slice());
-      } else {
-        c[i] = 0;
-        ++i;
-      }
+//Swaps two array items
+function arraySwap(array, i, j) {
+    var temp = array[i];
+    array[i] = array[j];
+    array[j] = temp;
+}
+
+//Uses a lexicographic algorithm to move through all permutations one step at a time
+function nextPermutation(_array) {
+    largestI = -1;
+    largestJ = -1;
+    for(var i = 0; i < _array.length-1; i++) {
+        if(_array[i] < _array[i+1]) {
+            largestI = i;
+        }
     }
-    return result;
-  }
+    if(largestI == -1) {
+        console.log("Finished");
+        return _array;
+    }
+    for(var j = 0; j < _array.length; j++) {
+        if(_array[largestI] < _array[j]) {
+            largestJ = j;
+        }
+    }
+    arraySwap(_array, largestI, largestJ);
+    var tempArray = _array.splice(largestI + 1).reverse();
+    //tempArray.reverse();
+    _array.push.apply(_array, tempArray);
+
+    return _array;
+}
+
+//Calculate factorial of a number
+function factorial(num)
+{
+    var rval=1;
+    for (var i = 2; i <= num; i++)
+        rval = rval * i;
+    return rval;
+}
