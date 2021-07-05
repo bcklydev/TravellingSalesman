@@ -140,9 +140,47 @@ class lexicographic extends path {
 class greedy extends path {
     constructor(_colour = "#FFFFFF") {
         super(_colour);
+        this.count = 0;
+    }
+    init(_nodes) {
+        this.nodes = nodes.slice();
+        this.length = this.nodes.length - 1;
+        this.calculateSum();
+        this.count = 0;
     }
     changePath() {
+        this.bestNames = [];
+        this.bestDistance = 0;
+        var unvisited = this.nodes.slice()
+        var l = unvisited.length;
+        var visited = unvisited.splice(this.count, this.count + 1)
+        for(let i = 0; i < this.nodes.length - 1; i++) {
+            let d = 0;
+            let record = Infinity;
+            let nextNode = "";
+            for(let j = 0; j < unvisited.length; j++) {
+                d = distanceBetweenPoints(visited[0].getX(), visited[0].getY(), unvisited[j].getX(), unvisited[j].getY());
+                if(d < record) {
+                    record = d;
+                    nextNode = j;
+                }
+                console.log(unvisited[j], d);
+            }
+            console.log(record, nextNode);
+            visited.push.apply(visited, unvisited.splice(nextNode, 1));
+        }
+        console.log(visited);
+        this.bestNodes = visited.slice();
+        for(let i = 0; i < l - 1; i++) {
+            this.bestDistance = this.bestDistance + distanceBetweenPoints(visited[i].getX(), visited[i].getX(), visited[i+1].getX(), visited[i+1].getX());
+            this.bestNames.push(visited[i].getName());
+        }
+        this.bestNames.push(visited[l - 1].getName());
+        this.bestDistance = this.bestDistance + distanceBetweenPoints(visited[l-1].getX(), visited[l-1].getX(), visited[0].getX(), visited[0].getX());
 
+        console.log(this.bestNodes);
+        console.log(this.bestDistance);
+        console.log(this.bestNames);
     }
 }
 
@@ -176,7 +214,7 @@ class node {
 var FPS = 60, now, then = Date.now(), interval = 1000/FPS, delta;
 
 //STORES NAMES TO MAP TO NODES
-var names = ["A","B","C","D","E","F","G","H","I","J","K","L","M","N","O"];
+var names = ["A","B","C","D","E","F","G","H","I","J","K","L","M","N","O","P","Q","R","S","T","U","V","W","X","Y","Z"];
 
 //GET DOM AND STORE AS VARIABLES
 const DOCUMENT_RECORD = document.getElementById("record");
@@ -186,12 +224,13 @@ const SOLVE_BUTTON = document.getElementById("solve");
 
 var shufflePath = new shuffle("#FF0000");
 var lexicoPath = new lexicographic("#00FF00");
+var greedyPath = new greedy("#0000FF");
 
 var nodes = [];
 var solving = false;
 
 function addNode() {
-    if (nodes.length < 15) { //MAX LENGTH TO AVOID MEMORY ERRORS
+    if (nodes.length < 26) { //MAX LENGTH TO AVOID A LACK OF NAMES
         nodes.push(new node());
     }
 }
@@ -203,6 +242,7 @@ function clearNodes() {
 function beginSolve() {
     shufflePath.init(nodes);
     lexicoPath.init(nodes);
+    greedyPath.init(nodes);
     solving = true;
 }
 
@@ -234,8 +274,9 @@ function drawGame() {
         //DRAW THINGS
         drawNodes();
         if(solving) {
-            shufflePath.draw();
-            lexicoPath.draw();
+            //shufflePath.draw();
+            greedyPath.draw();
+            //lexicoPath.draw();
         }
         updateGame();
         then = now - (delta % interval);
@@ -247,7 +288,7 @@ function updateButtons() {
         CLEAR_BUTTON.disabled = true;
         SOLVE_BUTTON.disabled = true;
     }
-    else if(nodes.length > 14) {
+    else if(nodes.length > 25) {
         ADD_BUTTON.disabled = true;
     }
     else if(nodes.length > 1) {
@@ -264,7 +305,8 @@ function updateButtons() {
 function updateRecord() {
     if(solving) {
         DOCUMENT_RECORD.innerHTML = "Best shuffle - " + shufflePath.bestDistance.toFixed(2) + " : " + shufflePath.bestNames + " : " + shufflePath.count +
-        "<br>Best path - " + lexicoPath.bestDistance.toFixed(2) + " : " + lexicoPath.bestNames + " : " + ((lexicoPath.count / lexicoPath.total) * 100).toFixed(0).toString();
+        "<br>Best path - " + lexicoPath.bestDistance.toFixed(2) + " : " + lexicoPath.bestNames + " : " + ((lexicoPath.count / lexicoPath.total) * 100).toFixed(0).toString() +
+        "<br>Heuristic - " + greedyPath.bestDistance.toFixed(2) + " : " + greedyPath.bestNames;
     }
 }
 
@@ -276,6 +318,7 @@ function updateGame() {
         updateRecord();
         shufflePath.changePath();
         lexicoPath.changePath();
+        greedyPath.changePath();
     }
 }
   
