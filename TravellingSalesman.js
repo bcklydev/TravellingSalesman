@@ -145,42 +145,47 @@ class greedy extends path {
     init(_nodes) {
         this.nodes = nodes.slice();
         this.length = this.nodes.length - 1;
-        this.calculateSum();
         this.count = 0;
+        this.bestNodes = this.nodes.slice();
     }
     changePath() {
-        this.bestNames = [];
-        this.bestDistance = 0;
-        var unvisited = this.nodes.slice()
-        var l = unvisited.length;
-        var visited = unvisited.splice(this.count, this.count + 1)
-        for(let i = 0; i < this.nodes.length - 1; i++) {
-            let d = 0;
-            let record = Infinity;
-            let nextNode = "";
-            for(let j = 0; j < unvisited.length; j++) {
-                d = distanceBetweenPoints(visited[0].getX(), visited[0].getY(), unvisited[j].getX(), unvisited[j].getY());
-                if(d < record) {
-                    record = d;
-                    nextNode = j;
+        if(this.count > this.length) {
+            this.solved = true;
+        }
+        else {
+            var unvisited = this.nodes.slice()
+            var l = unvisited.length;
+            var visited = unvisited.splice(this.count, this.count + 1)
+            for(let i = 0; i < this.nodes.length - 1; i++) {
+                let d = 0;
+                let record = Infinity;
+                let nextNode = "";
+                for(let j = 0; j < unvisited.length; j++) {
+                    d = distanceBetweenPoints(visited[i].getX(), visited[i].getY(), unvisited[j].getX(), unvisited[j].getY());
+                    if(d < record) {
+                        record = d;
+                        nextNode = j;
+                    }
                 }
-                console.log(unvisited[j], d);
+                visited.push.apply(visited, unvisited.splice(nextNode, 1));
             }
-            console.log(record, nextNode);
-            visited.push.apply(visited, unvisited.splice(nextNode, 1));
-        }
-        console.log(visited);
-        this.bestNodes = visited.slice();
-        for(let i = 0; i < l - 1; i++) {
-            this.bestDistance = this.bestDistance + distanceBetweenPoints(visited[i].getX(), visited[i].getX(), visited[i+1].getX(), visited[i+1].getX());
-            this.bestNames.push(visited[i].getName());
-        }
-        this.bestNames.push(visited[l - 1].getName());
-        this.bestDistance = this.bestDistance + distanceBetweenPoints(visited[l-1].getX(), visited[l-1].getX(), visited[0].getX(), visited[0].getX());
+            let tempDistance = 0;
+            let tempNames = [];
+            for(let i = 0; i < l - 1; i++) {
+                tempDistance = tempDistance + distanceBetweenPoints(visited[i].getX(), visited[i].getX(), visited[i+1].getX(), visited[i+1].getX());
+                tempNames.push(visited[i].getName());
+            }
+            tempDistance = tempDistance + distanceBetweenPoints(visited[l-1].getX(), visited[l-1].getX(), visited[0].getX(), visited[0].getX());
+            tempNames.push(visited[l - 1].getName());
 
-        console.log(this.bestNodes);
-        console.log(this.bestDistance);
-        console.log(this.bestNames);
+            if(tempDistance < this.bestDistance) {
+                this.bestNodes = visited.slice();
+                this.bestNames = tempNames.slice();
+                this.bestDistance = tempDistance;
+            }
+
+            this.count = this.count + 1;
+        }
     }
 }
 
@@ -274,9 +279,9 @@ function drawGame() {
         //DRAW THINGS
         drawNodes();
         if(solving) {
-            //shufflePath.draw();
+            shufflePath.draw();
             greedyPath.draw();
-            //lexicoPath.draw();
+            lexicoPath.draw();
         }
         updateGame();
         then = now - (delta % interval);
@@ -304,9 +309,9 @@ function updateButtons() {
 
 function updateRecord() {
     if(solving) {
-        DOCUMENT_RECORD.innerHTML = "Best shuffle - " + shufflePath.bestDistance.toFixed(2) + " : " + shufflePath.bestNames + " : " + shufflePath.count +
-        "<br>Best path - " + lexicoPath.bestDistance.toFixed(2) + " : " + lexicoPath.bestNames + " : " + ((lexicoPath.count / lexicoPath.total) * 100).toFixed(0).toString() +
-        "<br>Heuristic - " + greedyPath.bestDistance.toFixed(2) + " : " + greedyPath.bestNames;
+        DOCUMENT_RECORD.innerHTML = "<span style='color: #FF0000'>Best shuffle - " + shufflePath.bestDistance.toFixed(2) + " : " + shufflePath.bestNames + " : " + shufflePath.count +
+        "</span><span style='color: #00FF00'><br>Best path - " + lexicoPath.bestDistance.toFixed(2) + " : " + lexicoPath.bestNames + " : " + ((lexicoPath.count / lexicoPath.total) * 100).toFixed(0).toString() +
+        "</span><span style='color: #0000FF'><br>Heuristic - " + greedyPath.bestDistance.toFixed(2) + " : " + greedyPath.bestNames + "</span>";
     }
 }
 

@@ -13,23 +13,30 @@
             }
             canvas {
                 position: absolute;
-                width: 100vw;
-                height: 100vh;
             }
             #controls {
                 position: absolute;
-                top: 10px;
-                left: 10px;
+                top: 1vh;
+                left: 1vw;
                 width: 100vw;
             }
             button {
                 margin: 0.5vw;
                 padding: 0.5vw;
-                font-size: 16px;
+                font-size: 2vw;
             }
             #record {
                 color: #FFFFFF;
                 margin: 0.5vw;
+            }
+            @media screen and (orientation: portrait) {
+                body {
+                    font-size: 4vw;
+                }
+
+                button {
+                    font-size: 4vw;
+                }
             }
         </style>
     </head>
